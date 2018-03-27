@@ -1,7 +1,7 @@
 import os
 
-import main
-from main import rename_dupes_in_directory, rename_duplicates_in_tree
+import rename
+from rename import rename_dupes_in_directory, rename_duplicates_in_tree
 
 
 def test_rename_dupes_in_directory(monkeypatch):
@@ -86,7 +86,7 @@ def test_rename_duplicates_in_tree(monkeypatch):
     monkeypatch.setattr(os, 'listdir', mock_dir_list)
     monkeypatch.setattr(os, 'replace', mock_replace)
     monkeypatch.setattr(os.path, 'exists', mock_path_exists)
-    monkeypatch.setattr(main, 'rename_dupes_in_directory', mock_rename_dupes_in_directory)
+    monkeypatch.setattr(rename, 'rename_dupes_in_directory', mock_rename_dupes_in_directory)
 
     rename_duplicates_in_tree(dirpath)
 
