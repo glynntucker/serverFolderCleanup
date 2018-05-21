@@ -5,6 +5,9 @@ import sys
 
 def rename_dupes_in_directory(dirpath):
     entries = sorted(os.listdir(dirpath), key=lambda s: s.lower())
+    if not entries:
+        os.rmdir(dirpath)
+        return
 
     checked = set([x.lower() for x in entries])
     for i, entry in enumerate(entries[1:]):

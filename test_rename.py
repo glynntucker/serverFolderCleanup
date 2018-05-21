@@ -1,4 +1,6 @@
 import os
+from tempfile import TemporaryDirectory
+
 
 import rename
 from rename import rename_dupes_in_directory, rename_duplicates_in_tree
@@ -94,3 +96,9 @@ def test_rename_duplicates_in_tree(monkeypatch):
     assert walk_called is True
     assert rename_dupes_in_directory_called is True
     assert called_path == dirpath
+
+
+def test_rename_duplicates_in_tree_empty_dir():
+    temp_dir = TemporaryDirectory().name
+    rename_duplicates_in_tree(temp_dir)
+    assert os.path.exists(temp_dir) is False

@@ -1,6 +1,6 @@
 # Rename Duplicates
 
-Rename Duplicates renames all the files and directories with duplicate filenames in the given directory and all its subdirectories. It is case insensitive.
+Rename Duplicates renames all the files and directories with duplicate filenames in the given directory and all its subdirectories. It is case insensitive. It also removes any empty directories.
 
 The files are renamed by appending '_x' to their name where x is an integer.
 
