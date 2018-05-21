@@ -1,25 +1,26 @@
 import argparse
 import os
 import sys
-from collections import Counter
 
 
 def rename_dupes_in_directory(dirpath):
-    entries = Counter(os.listdir(dirpath))
-    duplicates = {key: value for (key, value) in entries.items() if value > 1}
+    entries = sorted(os.listdir(dirpath), key=lambda s: s.lower())
 
-    for dupe in duplicates:
-        i = 0
-        for _ in range(duplicates[dupe]):
-            file_to_rename = os.path.join(dirpath, dupe)
-            head, tail = os.path.splitext(file_to_rename)
+    checked = set([x.lower() for x in entries])
+    for i, entry in enumerate(entries[1:], 1):
+        if entry.lower() == entries[i-1].lower():
+            file_to_rename = os.path.join(dirpath, entry)
+            i = 0
 
-            new_filename = "{}_{}{}".format(head, i, tail)
-            while os.path.exists(new_filename):
+            head, tail = os.path.splitext(entry)
+            entry = "{}_{}{}".format(head, i, tail)
+            while entry.lower() in checked:
                 i += 1
-                new_filename = "{}_{}{}".format(head, i, tail)
+                entry = "{}_{}{}".format(head, i, tail)
+            new_filename = os.path.join(dirpath, entry)
             print("Renaming {} as {}".format(file_to_rename, new_filename))
             os.replace(file_to_rename, new_filename)
+        checked.add(entry.lower())
 
 
 def rename_duplicates_in_tree(dirpath):

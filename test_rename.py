@@ -5,7 +5,7 @@ from rename import rename_dupes_in_directory, rename_duplicates_in_tree
 
 
 def test_rename_dupes_in_directory(monkeypatch):
-    dirlist = "afile.txt afile.txt morefile.txt afile.txt singlefile.txt adir adir afile_1.txt".split(' ')
+    dirlist = "afile.txt afile.txt morefile.txt afile.txt singlefile.txt adir adir afile_1.txt AFile.txt".split(' ')
     dirpath = os.path.normpath("A://fake/path")
 
     current_path_list = [os.path.join(dirpath, filename) for filename in dirlist]
@@ -38,14 +38,15 @@ def test_rename_dupes_in_directory(monkeypatch):
     rename_dupes_in_directory(dirpath)
 
     expected_dupes = sorted(os.path.join(dirpath, filename) for filename in
-                            "afile.txt afile.txt afile.txt adir adir".split(' '))
+                            "afile.txt afile.txt adir AFile.txt".split(' '))
     expected_new_names = sorted(os.path.join(dirpath, filename) for filename in
-                                "afile_0.txt afile_2.txt afile_3.txt adir_0 adir_1".split(' '))
+                                "afile_0.txt afile_2.txt adir_0 AFile_3.txt".split(' '))
 
     expected_path_list = sorted(os.path.join(dirpath, filename) for filename in
                                 "morefile.txt singlefile.txt afile_0.txt afile_1.txt"
-                                " afile_2.txt afile_3.txt adir_0 adir_1".split(' '))
-
+                                " afile_2.txt afile.txt adir_0 adir AFile_3.txt".split(' '))
+    print(sorted(dupes_found))
+    print(expected_dupes)
     assert sorted(dupes_found) == expected_dupes
     assert sorted(dupes_renamed) == expected_new_names
     assert sorted(current_path_list) == expected_path_list
