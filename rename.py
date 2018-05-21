@@ -20,7 +20,7 @@ def rename_dupes_in_directory(dirpath):
             new_filename = os.path.join(dirpath, entry)
             print("Renaming {} as {}".format(file_to_rename, new_filename))
             os.replace(file_to_rename, new_filename)
-        checked.add(entry.lower())
+            checked.add(entry.lower())
 
 
 def rename_duplicates_in_tree(dirpath):
