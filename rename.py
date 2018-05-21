@@ -7,16 +7,17 @@ def rename_dupes_in_directory(dirpath):
     entries = sorted(os.listdir(dirpath), key=lambda s: s.lower())
 
     checked = set([x.lower() for x in entries])
-    for i, entry in enumerate(entries[1:], 1):
-        if entry.lower() == entries[i-1].lower():
+    for i, entry in enumerate(entries[1:]):
+        if entry.lower() == entries[i].lower():
             file_to_rename = os.path.join(dirpath, entry)
-            i = 0
+            j = 0
 
             head, tail = os.path.splitext(entry)
-            entry = "{}_{}{}".format(head, i, tail)
+            entry = "{}_{}{}".format(head, j, tail)
             while entry.lower() in checked:
-                i += 1
-                entry = "{}_{}{}".format(head, i, tail)
+                j += 1
+                entry = "{}_{}{}".format(head, j, tail)
+
             new_filename = os.path.join(dirpath, entry)
             print("Renaming {} as {}".format(file_to_rename, new_filename))
             os.replace(file_to_rename, new_filename)
