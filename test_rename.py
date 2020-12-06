@@ -1,22 +1,25 @@
 import os
+import pathlib
 from tempfile import TemporaryDirectory
 
-
 import rename
-from rename import rename_dupes_in_directory, rename_duplicates_in_tree
+from rename import (
+    rename_dupes_in_directory, rename_duplicates_in_tree
+)
 
 
 def test_rename_dupes_in_directory(monkeypatch):
-    dirlist = "afile.txt afile.txt morefile.txt afile.txt singlefile.txt adir adir afile_1.txt AFile.txt".split(' ')
-    dirpath = os.path.normpath("A://fake/path")
+    dirpath = pathlib.Path("A://fake/path")
+    dirname_list = "afile.txt afile.txt morefile.txt afile.txt singlefile.txt adir adir afile_1.txt AFile.txt".split(' ')
+    dirlist = [dirpath / filename for filename in dirname_list]
 
-    current_path_list = [os.path.join(dirpath, filename) for filename in dirlist]
+    current_path_list = dirlist[:]
     dupes_found = []
     dupes_renamed = []
 
-    def mock_dir_list(path):
+    def mock_iterdir(path):
         nonlocal dirlist
-        return dirlist
+        return iter(dirlist)
 
     def mock_replace(path, new_path):
         nonlocal current_path_list
@@ -29,33 +32,31 @@ def test_rename_dupes_in_directory(monkeypatch):
         dupes_renamed.append(new_path)
         current_path_list.append(new_path)
 
-    def mock_path_exists(path):
-        nonlocal current_path_list
-        return path in current_path_list
-
-    monkeypatch.setattr(os, 'listdir', mock_dir_list)
-    monkeypatch.setattr(os, 'replace', mock_replace)
-    monkeypatch.setattr(os.path, 'exists', mock_path_exists)
+    monkeypatch.setattr(pathlib.Path, 'iterdir', mock_iterdir)
+    monkeypatch.setattr(pathlib.Path, 'replace', mock_replace)
 
     rename_dupes_in_directory(dirpath)
 
-    expected_dupes = sorted(os.path.join(dirpath, filename) for filename in
-                            "afile.txt afile.txt adir AFile.txt".split(' '))
-    expected_new_names = sorted(os.path.join(dirpath, filename) for filename in
-                                "afile_0.txt afile_2.txt adir_0 AFile_3.txt".split(' '))
+    expected_dupes = sorted(
+        dirpath / filename for filename in "afile.txt afile.txt adir AFile.txt".split(' ')
+        )
+    expected_new_names = sorted(
+        dirpath / filename for filename in "afile_0.txt afile_2.txt adir_0 AFile_3.txt".split(' ')
+        )
 
-    expected_path_list = sorted(os.path.join(dirpath, filename) for filename in
-                                "morefile.txt singlefile.txt afile_0.txt afile_1.txt"
-                                " afile_2.txt afile.txt adir_0 adir AFile_3.txt".split(' '))
-    print(sorted(dupes_found))
-    print(expected_dupes)
+    expected_path_list = sorted(
+        dirpath / filename for filename in
+        "morefile.txt singlefile.txt afile_0.txt afile_1.txt"
+        " afile_2.txt afile.txt adir_0 adir AFile_3.txt".split(' ')
+        )
+
     assert sorted(dupes_found) == expected_dupes
     assert sorted(dupes_renamed) == expected_new_names
     assert sorted(current_path_list) == expected_path_list
 
 
 def test_rename_duplicates_in_tree(monkeypatch):
-    dirpath = os.path.normpath("A://fake/path")
+    dirpath = pathlib.Path("A://fake/path")
     walk_called = False
     rename_dupes_in_directory_called = False
     called_path = ""
@@ -69,26 +70,22 @@ def test_rename_duplicates_in_tree(monkeypatch):
 
         return [[os.path.join(path, 'dirname'), ['another_dirname'], ['filename.txt']]]
 
-    def mock_dir_list(path):
+    def mock_iterdir(path):
         return []
 
     def mock_replace(path, new_path):
         pass
-
-    def mock_path_exists(path):
-        return True
 
     def mock_rename_dupes_in_directory(path):
         nonlocal rename_dupes_in_directory_called
         nonlocal called_path
 
         rename_dupes_in_directory_called = True
-        called_path = os.path.normpath("A://fake/path")
+        called_path = path.parent
 
     monkeypatch.setattr(os, 'walk', mock_walk)
-    monkeypatch.setattr(os, 'listdir', mock_dir_list)
-    monkeypatch.setattr(os, 'replace', mock_replace)
-    monkeypatch.setattr(os.path, 'exists', mock_path_exists)
+    monkeypatch.setattr(pathlib.Path, 'iterdir', mock_iterdir)
+    monkeypatch.setattr(pathlib.Path, 'replace', mock_replace)
     monkeypatch.setattr(rename, 'rename_dupes_in_directory', mock_rename_dupes_in_directory)
 
     rename_duplicates_in_tree(dirpath)
@@ -96,9 +93,3 @@ def test_rename_duplicates_in_tree(monkeypatch):
     assert walk_called is True
     assert rename_dupes_in_directory_called is True
     assert called_path == dirpath
-
-
-def test_rename_duplicates_in_tree_empty_dir():
-    temp_dir = TemporaryDirectory().name
-    rename_duplicates_in_tree(temp_dir)
-    assert os.path.exists(temp_dir) is False

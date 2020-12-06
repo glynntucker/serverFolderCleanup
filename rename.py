@@ -1,43 +1,42 @@
 import argparse
 import os
+import pathlib
 import sys
 
 
-def rename_dupes_in_directory(dirpath):
-    entries = sorted(os.listdir(dirpath), key=lambda s: s.lower())
-    if not entries:
-        os.rmdir(dirpath)
+def rename_dupes_in_directory(dirpath, log_only=False):
+    if next(dirpath.iterdir(), None) is None:
+        # directory is empty
+        dirpath.rmdir
         return
 
-    checked = set([x.lower() for x in entries])
+    entries = sorted(dirpath.iterdir())
+    checked = set([x.name.lower() for x in entries])
     for i, entry in enumerate(entries[1:]):
-        if entry.lower() == entries[i].lower():
-            file_to_rename = os.path.join(dirpath, entry)
+        if entry.name.lower() == entries[i].name.lower():
             j = 0
-
-            head, tail = os.path.splitext(entry)
-            entry = "{}_{}{}".format(head, j, tail)
-            while entry.lower() in checked:
+            new_name = "{}_{}{}".format(entry.stem, j, entry.suffix)
+            while new_name.lower() in checked:
                 j += 1
-                entry = "{}_{}{}".format(head, j, tail)
+                new_name = "{}_{}{}".format(entry.stem, j, entry.suffix)
 
-            new_filename = os.path.join(dirpath, entry)
-            print("Renaming {} as {}".format(file_to_rename, new_filename))
-            os.replace(file_to_rename, new_filename)
-            checked.add(entry.lower())
+            new_path = entry.parent / new_name
+            print("Renaming {} as {}".format(entry.name, new_path.name))
+            entry.replace(new_path)
+            checked.add(new_path.name.lower())
 
 
 def rename_duplicates_in_tree(dirpath):
     # topdown false starts walking from the bottom of the tree instead of the top
     # vital for directory renaming
     for root, _, _ in os.walk(dirpath, topdown=False):
-        rename_dupes_in_directory(root)
+        rename_dupes_in_directory(pathlib.Path(root))
 
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
         description="Rename any duplicate file or directory names in the given path."
-                    " This is achieved by appending '_x' where x is an integer"
+                    " This is achieved by appending '_x' where x is an integer."
     )
 
     parser.add_argument(
@@ -58,13 +57,14 @@ def parse_args(args):
 
 if __name__ == "__main__":
     parsed_args = parse_args(sys.argv[1:])
+    path = pathlib.Path(parsed_args.path).resolve()
 
-    if os.path.exists(parsed_args.path):
+    if path.exists() and path.is_dir():
         if parsed_args.nosubs:
-            print("Renaming all duplicates in '{}' directory only".format(parsed_args.path))
-            rename_dupes_in_directory(parsed_args.path)
+            print("Renaming all duplicates in '{}' directory only".format(path))
+            rename_dupes_in_directory(path)
         else:
-            print("Renaming all duplicates in '{}' and its subdirectories".format(parsed_args.path))
-            rename_duplicates_in_tree(parsed_args.path)
+            print("Renaming all duplicates in '{}' and its subdirectories".format(path))
+            rename_duplicates_in_tree(path)
     else:
-        print("{} is not a valid path".format(parsed_args.path))
+        print("{} is not a valid directory".format(path))
