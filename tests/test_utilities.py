@@ -24,5 +24,16 @@ def test_create_new_path(tmp_path):
         filename.write_text("File contents")
     assert tmp_path.exists()
     assert list(tmp_path.iterdir())
-    new_filename = utilities.create_new_path(tmp_path, "a_file.txt")
+    new_filename = utilities.create_new_pathname(tmp_path, "a_file.txt")
     assert new_filename not in names
+
+
+def test_create_new_path_case_insensitive(tmp_path):
+    names = ("A_File.txt", "another_file.txt")
+    for name in names:
+        filename = tmp_path / name
+        filename.write_text("File contents")
+    assert tmp_path.exists()
+
+    new_filename = utilities.create_new_pathname(tmp_path, "a_file.txt")
+    assert new_filename.name.lower() not in [n.lower() for n in names]

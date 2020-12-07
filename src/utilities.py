@@ -7,7 +7,7 @@ def directory_is_empty(directory: pathlib.Path) -> bool:
     return next(directory.iterdir(), None) is None
     
 
-def create_new_path(parent_path: pathlib.Path, chosen_name: str) -> pathlib.Path:
+def create_new_pathname(parent_path: pathlib.Path, chosen_name: str) -> pathlib.Path:
     """Creates a new pathname that does not conflict with current pathnames.
 
     If there is a conflicting pathname, a number will be appended onto the
