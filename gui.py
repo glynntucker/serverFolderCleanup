@@ -1,9 +1,10 @@
 import os
+import pathlib
 
 import tkinter as tk
 from tkinter import filedialog, ttk
 
-from rename import rename_duplicates_in_tree, rename_dupes_in_directory
+from src.rename import rename_duplicates_in_tree, rename_duplicates_in_directory
 
 
 class DirectoryEntry(ttk.Entry):
@@ -57,9 +58,19 @@ class App:
             offvalue=False
         )
 
+        self.log_only = tk.BooleanVar(value=False)
+        self.checkbutton_log_only = ttk.Checkbutton(
+            self.frame,
+            text="Check to log without making changes",
+            variable=self.log_only,
+            onvalue=True,
+            offvalue=False
+        )
+
         self.entry_box.grid(row=0, column=0, sticky=(tk.E + tk.W))
         self.button_browse.grid(row=0, column=1, sticky=tk.E)
         self.checkbutton_do_subdirectories.grid(row=1, column=0, sticky=tk.W)
+        self.checkbutton_log_only.grid(row=2, column=0, sticky=tk.W)
         self.button_run.grid(row=1, column=1, sticky=tk.E)
 
         for child in self.frame.winfo_children():
@@ -77,10 +88,11 @@ class App:
             self.button_run.config(state=tk.NORMAL)
 
     def run_rename(self):
+        dir_path = pathlib.Path(str(self.directory_name.get()))
         if self.sub_dirs_to_be_done:
-            rename_duplicates_in_tree(self.directory_name)
+            rename_duplicates_in_tree(dir_path, log_only=self.log_only)
         else:
-            rename_dupes_in_directory(self.directory_name)
+            rename_duplicates_in_directory(dir_path, log_only=self.log_only)
 
 
 if __name__ == '__main__':
