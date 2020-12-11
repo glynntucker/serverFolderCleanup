@@ -41,7 +41,7 @@ def test_rename_duplicates_in_directory_empty_directory_logfile(tmp_path):
     assert empty_dir.exists() is False
 
     log_contents = logfile.read_text()
-    assert "Removed" in log_contents
+    assert "Remove" in log_contents
     assert str(empty_dir) in log_contents
 
 
@@ -55,16 +55,16 @@ def test_rename_duplicates_in_directory_empty_directory_log_only(tmp_path):
     assert empty_dir.exists()
 
     log_contents = logfile.read_text()
-    assert "Will remove" in log_contents
+    assert "Remove" in log_contents
     assert str(empty_dir) in log_contents
 
 
 def test_rename_duplicates_in_directory(temp_path_with_files):
     _, content_dir = temp_path_with_files
-    original_contents = list(content_dir.iterdir())
+    original_contents = list(c.name.lower() for c in content_dir.iterdir())
 
     rename.rename_duplicates_in_directory(content_dir)
-    current_contents = list(content_dir.iterdir())
+    current_contents = list(c.name.lower() for c in content_dir.iterdir())
 
     # the extra file is the logfile
     assert len(original_contents) == len(current_contents) - 1
@@ -78,10 +78,10 @@ def test_rename_duplicates_in_directory_given_logfile(temp_path_with_files):
     base_dir, content_dir = temp_path_with_files
 
     logfile = base_dir / rename.LOGFILE_NAME
-    original_contents = list(content_dir.iterdir())
+    original_contents = list(c.name.lower() for c in content_dir.iterdir())
 
     rename.rename_duplicates_in_directory(content_dir, logfile)
-    current_contents = list(content_dir.iterdir())
+    current_contents = list(c.name.lower() for c in content_dir.iterdir())
 
     assert len(original_contents) == len(current_contents)
     assert len(set(current_contents)) == len(current_contents)
@@ -93,13 +93,47 @@ def test_rename_duplicates_in_directory_given_logfile(temp_path_with_files):
 def test_rename_duplicates_in_tree(temp_path_with_files):
     base_dir, content_dir = temp_path_with_files
 
-    original_contents = list(content_dir.iterdir())
+    original_contents = list(c.name.lower() for c in content_dir.iterdir())
 
     rename.rename_duplicates_in_tree(base_dir)
-    current_contents = list(content_dir.iterdir())
+    current_contents = list(c.name.lower() for c in content_dir.iterdir())
 
     assert len(original_contents) == len(current_contents)
     assert len(set(current_contents)) == len(current_contents)
 
     # check logfile
     assert (base_dir / rename.LOGFILE_NAME).exists()
+
+
+def test_rename_duplicates_in_directory_log_only(temp_path_with_files):
+    base_dir, content_dir = temp_path_with_files
+
+    logfile = base_dir / rename.LOGFILE_NAME
+    original_contents = list(c.name.lower() for c in content_dir.iterdir())
+
+    rename.rename_duplicates_in_directory(content_dir, logfile, log_only=True)
+    current_contents = list(c.name.lower() for c in content_dir.iterdir())
+
+    assert current_contents == original_contents
+
+    # check logfile
+    assert logfile.exists()
+    log_contents = logfile.read_text()
+    assert "Rename" in log_contents
+
+
+def test_rename_duplicates_in_tree_log_only(temp_path_with_files):
+    base_dir, content_dir = temp_path_with_files
+
+    original_contents = list(c.name.lower() for c in content_dir.iterdir())
+
+    rename.rename_duplicates_in_tree(base_dir, log_only=True)
+    current_contents = list(c.name.lower() for c in content_dir.iterdir())
+
+    assert current_contents == original_contents
+
+    # check logfile
+    logfile = base_dir / rename.LOGFILE_NAME
+    assert logfile.exists()
+    log_contents = logfile.read_text()
+    assert "Rename" in log_contents
