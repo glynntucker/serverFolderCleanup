@@ -1,3 +1,4 @@
+import os
 import pathlib
 
 from context import utilities
@@ -29,6 +30,10 @@ def test_create_new_path(tmp_path):
 
 
 def test_create_new_path_case_insensitive(tmp_path):
+    # Windows uses case insensitive files by default - we need to enable case sensitive files
+    if os.name == 'nt':
+        os.system(f'cmd /c "fsutil.exe file setCaseSensitiveInfo {str(tmp_path)} enable"')
+
     names = ("A_File.txt", "another_file.txt")
     for name in names:
         filename = tmp_path / name

@@ -14,8 +14,10 @@ def create_new_pathname(parent_path: pathlib.Path, chosen_name: str) -> pathlib.
     chosen_name."""
 
     new_name = parent_path / chosen_name
+    new_name_stem = new_name.stem
+
     j=0
-    while new_name.exists():
+    while new_name.name.lower() in (p.name.lower() for p in parent_path.iterdir()):
         j += 1
-        new_name = parent_path / f"{new_name.stem}_{j}{new_name.suffix}"
+        new_name = parent_path / f"{new_name_stem}_{j}{new_name.suffix}"
     return new_name
