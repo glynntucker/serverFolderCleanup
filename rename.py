@@ -16,7 +16,8 @@ def parse_args(args):
         'path',
         help="Rename all duplicate names in the directory of the given path "
              "as well as those in its subdirectories (unless --nosubs is provided). "
-             "Additionally, remove all empty directories."
+             "Additionally, remove all empty directories.",
+        required=True
     )
 
     parser.add_argument(
@@ -42,11 +43,10 @@ if __name__ == "__main__":
 
     if path.exists() and path.is_dir():
         if parsed_args.nosubs:
-
             print(f"Renaming all duplicates in '{path}' directory only unless empty, then remove '{path}'")
-            rename_duplicates_in_directory(path)
+            rename_duplicates_in_directory(path, log_only=parsed_args.logonly)
         else:
             print(f"Renaming all duplicates in '{path}' and its subdirectories and removing empty directories")
-            rename_duplicates_in_tree(path)
+            rename_duplicates_in_tree(path, log_only=parsed_args.logonly)
     else:
         print(f"{path} is not a valid directory")
