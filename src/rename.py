@@ -49,7 +49,10 @@ def rename_duplicates_in_directory(
             completed_paths.add(path.name.lower())
 
 
-def rename_duplicates_in_tree(dirpath: pathlib.Path, log_only: bool = False):
+def rename_duplicates_in_tree(
+    dirpath: pathlib.Path,
+    log_only: bool = False
+    ) -> None:
     """Rename duplicate names within each subdirectory.
 
     Files that are renamed will be logged. Empty directories will be deleted."""
