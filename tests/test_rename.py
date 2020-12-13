@@ -8,20 +8,6 @@ from fixtures import temp_path_with_files, info_caplog
 log = logging.getLogger(__name__)
 
 
-def test_rename_duplicates_in_directory_empty_directory(tmp_path, info_caplog):
-    assert tmp_path.exists()
-    rename.rename_duplicates_in_directory(tmp_path)
-    assert tmp_path.exists() is False
-    assert str(tmp_path) in info_caplog.text
-
-
-def test_rename_duplicates_in_directory_empty_directory_log_only(tmp_path, info_caplog):
-    assert tmp_path.exists()
-    rename.rename_duplicates_in_directory(tmp_path, log_only=True)
-    assert tmp_path.exists()
-    assert str(tmp_path) in info_caplog.text
-
-
 def test_rename_duplicates_in_directory(temp_path_with_files, info_caplog):
     _, content_dir = temp_path_with_files
 
