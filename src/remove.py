@@ -9,30 +9,41 @@ from .utilities import directory_is_empty
 log = logging.getLogger(__name__)
         
 
-def remove_empty_dir(
+def _remove_empty_dir(
     dirpath: pathlib.Path,
     log_only: bool = False
     ) -> None:
     """Remove the provided directory if empty"""
+    if directory_is_empty(dirpath):
+        if log_only:
+            log.info("Identified %s as an empty directory to remove", dirpath)
+        else:
+            dirpath.rmdir()
+            log.info("Removed %s as it was empty", dirpath)
 
-    directories_to_check = [dirpath]
-    if not directory_is_empty(dirpath):
-        directories_to_check = (path for path in dirpath.iterdir() if path.is_dir())
+
+def remove_empty_dir(
+    dirpath: pathlib.Path,
+    log_only: bool = False
+    ) -> None:
+    """Remove children directories that are empty"""
+
+    directories_to_check = (path for path in dirpath.iterdir() if path.is_dir())
 
     for directory in directories_to_check:
-        if directory_is_empty(directory):
-            if log_only:
-                log.info("Identified %s as an empty directory to remove", directory)
-            else:
-                directory.rmdir()
-                log.info("Removed %s as it was empty", directory)
+       _remove_empty_dir(directory, log_only)
 
+    if directory_is_empty(dirpath):
+        _remove_empty_dir(dirpath, log_only)
 
 def remove_empty_dir_in_tree(
     dirpath: pathlib.Path,
     log_only: bool = False
     ) -> None:
-    """Remove empty directories within the given directory tree"""
+    """Remove empty directories within the given directory tree
+    
+    Note that if this is called with log_only==True, then the log will have
+    duplicate entries."""
     # topdown false starts walking from the bottom of the tree instead of the top
     for root, _, _ in os.walk(dirpath, topdown=False):
         remove_empty_dir(pathlib.Path(root), log_only=log_only)
