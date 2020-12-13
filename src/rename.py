@@ -19,8 +19,6 @@ def rename_duplicates_in_directory(
     """Rename duplicate names within the given directory.
     
     Files that are renamed will be logged. An empty directory will be deleted."""
-    log.info("*** Checking %s for duplicates", dirpath)
-
     if directory_is_empty(dirpath):
         if not log_only:
             dirpath.rmdir()
@@ -53,7 +51,6 @@ def rename_duplicates_in_tree(
     """Rename duplicate names within each subdirectory.
 
     Files that are renamed will be logged. Empty directories will be deleted."""
-    log.info("*** Checking %s recursively for duplicates", dirpath)
     # topdown false starts walking from the bottom of the tree instead of the top
     # vital for directory renaming
     for root, _, _ in os.walk(dirpath, topdown=False):
