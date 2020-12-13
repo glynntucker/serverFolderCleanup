@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 import pathlib
 
 
@@ -21,3 +22,18 @@ def create_new_pathname(parent_path: pathlib.Path, chosen_name: str) -> pathlib.
         j += 1
         new_name = parent_path / f"{new_name_stem}_{j}{new_name.suffix}"
     return new_name
+
+
+def find_duplicates(seq: Sequence) -> set:
+    """Find case insensitive duplicates
+    
+    Adapted from stackoverflow - https://stackoverflow.com/a/9836685"""
+    seen = set()
+    seen2 = set()
+    for item in seq:
+        lowercase_item = str(item).lower()
+        if lowercase_item in seen:
+            seen2.add(item)
+        else:
+            seen.add(lowercase_item)
+    return seen2

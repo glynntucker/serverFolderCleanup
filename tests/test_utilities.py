@@ -42,3 +42,9 @@ def test_create_new_path_case_insensitive(tmp_path):
 
     new_filename = utilities.create_new_pathname(tmp_path, "a_file.txt")
     assert new_filename.name.lower() not in [n.lower() for n in names]
+
+
+def test_find_duplicates():
+    alist = "here are some duplicates HEre HERE here Are".split()
+    duplicates = "HEre HERE here Are".split()
+    assert set(utilities.find_duplicates(alist)) == set(duplicates)
