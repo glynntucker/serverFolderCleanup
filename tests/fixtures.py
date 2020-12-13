@@ -12,14 +12,24 @@ def temp_path_with_files(tmp_path):
 
     base_dir = tmp_path
 
+    # add an empty dir
+    (base_dir / "empty_dir").mkdir()
+
     # add a folder containing files with same case-insensitive names for testing
     content_dir = base_dir / 'content_dir'
     content_dir.mkdir()
-    names = ("afile.txt Afile.txt morefile.txt aFile.txt singlefile.txt adir ADIR "
-             "afile_1.txt AFile.txt blah.xls adoc.doc backup.BAK").split(' ')
-    for name in names:
-        filename = content_dir / name
-        filename.write_text("Text file contents")
+
+    filename = ("afile.txt Afile.txt morefile.txt aFile.txt singlefile.txt "
+               "afile_1.txt AFile.txt blah.xls adoc.doc backup.BAK").split(' ')
+    dirnames = "adir ADIR".split(' ')
+    for name in filename:
+        (content_dir / name).touch()
+
+    for name in dirnames:
+        (content_dir / name).mkdir()
+
+    # make more xls files
+    (content_dir / 'adir'/ "excel.xls").touch()
 
     yield base_dir, content_dir
 
