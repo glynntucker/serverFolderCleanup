@@ -4,7 +4,6 @@ import sys
 
 from src.rename import rename_duplicates_in_directory, rename_duplicates_in_tree
 
-
 def parse_args(args):
     parser = argparse.ArgumentParser(
         description="Rename any duplicate file or directory names in the given path."
@@ -16,8 +15,7 @@ def parse_args(args):
         'path',
         help="Rename all duplicate names in the directory of the given path "
              "as well as those in its subdirectories (unless --nosubs is provided). "
-             "Additionally, remove all empty directories.",
-        required=True
+             "Additionally, remove all empty directories."
     )
 
     parser.add_argument(
@@ -32,6 +30,14 @@ def parse_args(args):
         action="store_true",
         help='Use this option to log only without making actual changes '
              '(except creating the log file)',
+    )
+
+    parser.add_argument(
+        '-p', '--pattern',
+        type=str,
+        default=None,
+        help='Use this option in conjunction with a regular expression to delete matching files '
+             'This pattern is case insensitive.'
     )
 
     return parser.parse_args(args)
