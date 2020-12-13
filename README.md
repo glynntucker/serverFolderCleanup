@@ -16,15 +16,14 @@ This program exists for my dad who discovered, upon trying to move files from an
 
 ## Quickstart
 
-To run the program either:
+To run the program:
 
-- run `python gui.py` for a simple graphical interface, or
-- run `python rename.py <path>` (use -h for further help)
+- `python rename.py <path>` (use -h for further help).
 
 To run the tests:
 
 1. `pip install pytest`
-1. run `pytest` from the rename_duplicates directory
+2. run `pytest` from the rename_duplicates directory
 
 To type check:
 
