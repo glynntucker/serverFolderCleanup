@@ -1,6 +1,8 @@
+import logging
 import os
 
 import pytest
+
 
 @pytest.fixture
 def temp_path_with_files(tmp_path):
@@ -19,4 +21,10 @@ def temp_path_with_files(tmp_path):
         filename = content_dir / name
         filename.write_text("Text file contents")
 
-    return base_dir, content_dir
+    yield base_dir, content_dir
+
+
+@pytest.fixture
+def info_caplog(caplog):
+    caplog.set_level(logging.INFO)
+    yield caplog

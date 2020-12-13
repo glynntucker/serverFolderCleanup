@@ -1,5 +1,6 @@
 import argparse
 import datetime as dt
+import logging
 import os
 import pathlib
 import sys
@@ -8,30 +9,25 @@ from .utilities import (
     directory_is_empty, create_new_pathname
 )
 
-
-LOGFILE_NAME = "rename_log.txt"
+log = logging.getLogger(__name__)
 
 
 def rename_duplicates_in_directory(
     dirpath: pathlib.Path,
-    logfile: pathlib.Path = None,
     log_only: bool = False,
     ) -> None:
     """Rename duplicate names within the given directory.
     
     Files that are renamed will be logged. An empty directory will be deleted."""
+    log.info("*** Checking %s for duplicates", dirpath)
 
     if directory_is_empty(dirpath):
         if not log_only:
             dirpath.rmdir()
-        if logfile is not None:
-            with logfile.open("a") as f:
-                f.write(f"Remove {str(dirpath)}\n")
+            log.info("Removed empty directory %s", dirpath)
+        else:
+            log.info("Identified %s as an empty directory to remove", dirpath)
         return
-
-    # no point in creating a logfile in an empty directory -> perform after empty check
-    if logfile is None:
-        logfile = create_new_pathname(dirpath, LOGFILE_NAME)
 
     # find duplicates and rename
     completed_paths = set([])
@@ -41,9 +37,10 @@ def rename_duplicates_in_directory(
 
             if not log_only:
                 path.replace(new_path)
+                log.info("Renamed %s to %s", path, new_path)
+            else:
+                log.info("Identified %s as a duplicate to rename to %s", path, new_path)
 
-            with logfile.open("a") as f:
-                f.write(f"Rename {path.name} to {new_path.name}\n")
             completed_paths.add(new_path.name.lower())
         else:
             completed_paths.add(path.name.lower())
@@ -56,14 +53,8 @@ def rename_duplicates_in_tree(
     """Rename duplicate names within each subdirectory.
 
     Files that are renamed will be logged. Empty directories will be deleted."""
-
-    logfile = None
-    if not directory_is_empty(dirpath):
-        logfile = create_new_pathname(dirpath, LOGFILE_NAME)
-        with logfile.open("a") as f:
-            f.write(f"\n{'*'*30} {dt.datetime.now()} {'*'*30}\n")
-
+    log.info("*** Checking %s recursively for duplicates", dirpath)
     # topdown false starts walking from the bottom of the tree instead of the top
     # vital for directory renaming
     for root, _, _ in os.walk(dirpath, topdown=False):
-        rename_duplicates_in_directory(pathlib.Path(root), logfile=logfile, log_only=log_only)
+        rename_duplicates_in_directory(pathlib.Path(root), log_only=log_only)
