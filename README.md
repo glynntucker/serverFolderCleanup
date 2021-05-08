@@ -1,6 +1,6 @@
-# Rename Duplicates
+# serverFolderCleanup
 
-Rename Duplicates can do the following:
+serverFolderCleanup can do the following:
 
 - The default behaviour (given just a pathname) renames all the files and directories with duplicate filenames in the given directory and all its subdirectories recursively. It is case insensitive.  
   `python run.py <path>`
@@ -31,3 +31,17 @@ To type check:
 1. Run `mypy .` from the rename_duplicates directory
 
 This project requires Python 3.6 using only standard libraries to run. Development work may require pytest and mypy.
+
+## If running on PyCharm
+
+1. Open run.py
+1. Open 'Edit configurations...' dropdown in top right corner
+1. Either edit an existing configuration or create a new one
+1. Enter the script path, eg, `/Users/pat/PycharmProjects/serverFolderCleanup/run.py`
+1. Enter the arguments,eg, `-c /Volumes/jobs/2020`
+1. Enter the working directory, eg, `/Users/pat/PycharmProjects/serverFolderCleanup`
+1. Press OK button to save the configuration
+1. Run the program using this configuration from the main menu - Run / Run 'config name'
+1. Rename the default.log file saved in the working directory to something meaningful - eg `serverFileCleanup deletion log jobs_2020 20210508.log`
+1. Copy the log file to the top directory of the tree actioned by the script - eg `jobs/2020`
+
