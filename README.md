@@ -2,13 +2,12 @@
 
 serverFolderCleanup can do the following:
 
-- The default behaviour (given just a pathname) renames all the files and directories with duplicate filenames in the given directory and all its subdirectories recursively. It is case insensitive.  
+- The default behaviour (given just a pathname) renames files and directories with duplicate filenames in the given directory and all its subdirectories recursively. It is case insensitive.  
   `python run.py <path>`
-- When used with the `-p` flag or `--pattern` argument, it will delete the files it finds matching the provided pattern. eg `python run.py <path> -p .xls` will remove all files whose names contain the pattern `.xls`
-- When used with the `-c` flag or `--cleanup` argument, it will remove any empty directories it finds within the provided directory and its subdirectories recursively.  
-  `python run.py -c`
-- Given the `-n` flag, the program will limit its actions to the provided directory only (no subdirectories)
-- Given the `-L` flag, the program will log the actions it would've taken without making modifications
+- `-p` flag or `--pattern` argument deletes files matching the provided pattern using regex eg `python run.py <path> -p /.xls` will remove all files whose names contain the pattern `.xls`
+- `-c` flag or `--cleanup` argument removes empty directories found in the provided directory and its subdirectories recursively eg `python run.py -c`
+- `-n` flag limits its actions to the provided directory only (no subdirectories)
+- `-L` flag logs the actions it would've taken without making modifications
 
 Files that are renamed are done so by appending '_x' to their name, where x is an integer.
 
@@ -38,7 +37,7 @@ This project requires Python 3.6 using only standard libraries to run. Developme
 1. Open 'Edit configurations...' dropdown in top right corner
 1. Either edit an existing configuration or create a new one
 1. Enter the script path, eg, `/Users/pat/PycharmProjects/serverFolderCleanup/run.py`
-1. Enter the arguments,eg, `-c /Volumes/jobs/2020`
+1. Enter the arguments,eg, `-c /Volumes/jobs/2020` or  `-p /.bak -L /Volumes/jobs/2020`
 1. Enter the working directory, eg, `/Users/pat/PycharmProjects/serverFolderCleanup`
 1. Press OK button to save the configuration
 1. Run the program using this configuration from the main menu - Run / Run 'config name'
